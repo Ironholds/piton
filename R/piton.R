@@ -9,3 +9,4 @@
 #' @importFrom Rcpp sourceCpp
 #' @docType package
 #' @aliases piton piton-package
+NULL
