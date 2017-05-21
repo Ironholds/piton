@@ -1,0 +1,19 @@
+Package: piton
+Type: Package
+Title: Parsing Expression Grammars (PEGs) in Rcpp
+Version: 0.1.0
+URL: https://www.github.com/Ironholds/piton
+BugReports: https://www.github.com/Ironholds/piton/issues
+Author: Oliver Keyes [aut, cre], Colin Hirsch [cph], Daniel Frey [cph]
+Maintainer: Oliver Keyes <ironholds@gmail.com>
+Description: A wrapper around the Parsing Expression Grammar Template Library, a C++11 library for generating
+    Parsing Expression Grammars, that makes it accessible within Rcpp. With this, developers can implement
+    their own grammars and easily expose them in R packages.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+LinkingTo: Rcpp
+Imports: Rcpp
+SystemRequirements: C++11
+RoxygenNote: 6.0.1
+Suggests: testthat
