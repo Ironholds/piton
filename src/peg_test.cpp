@@ -5,7 +5,6 @@ using namespace tao::TAOCPP_PEGTL_NAMESPACE;
 namespace double_
 {
 
-// clang-format off
 struct plus_minus : opt< one< '+', '-' > > {};
 struct dot : one< '.' > {};
 
@@ -90,6 +89,23 @@ void sum_single(Rcpp::CharacterVector& x, Rcpp::NumericVector& out, int i){
   }
 }
 
+//'@title Example PEG
+//'@description an example of a Parsing Expression Grammar
+//'(PEG) that takes a comma-separated string of digits and
+//'sums them together
+//'
+//'@param x a vector of strings, each containing a comma-separated
+//'set of digits
+//'
+//'@return a vector of numbers, containing either the sum of
+//'the equivalent element of \code{x} or (if the element
+//'could not be parsed) \code{NA}.
+//'
+//'@examples
+//'# Simple example
+//'peg_sum("1,2, 5, 91, 34")
+//'
+//'@export
 //[[Rcpp::export]]
 Rcpp::NumericVector peg_sum(Rcpp::CharacterVector x){
 
