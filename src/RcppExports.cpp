@@ -6,12 +6,12 @@
 using namespace Rcpp;
 
 // peg_sum
-NumericVector peg_sum(CharacterVector x);
+Rcpp::NumericVector peg_sum(Rcpp::CharacterVector x);
 RcppExport SEXP piton_peg_sum(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type x(xSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type x(xSEXP);
     rcpp_result_gen = Rcpp::wrap(peg_sum(x));
     return rcpp_result_gen;
 END_RCPP

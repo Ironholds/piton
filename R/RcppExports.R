@@ -2,6 +2,6 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 peg_sum <- function(x) {
-    .Call('piton_peg_sum', PACKAGE = 'piton', x)
+    .Call(piton_peg_sum, x)
 }
 

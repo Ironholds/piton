@@ -1,15 +1,9 @@
 #include <Rcpp.h>
-using namespace Rcpp;
 #include <pegtl.hpp>
-
 using namespace tao::TAOCPP_PEGTL_NAMESPACE;
 
 namespace double_
 {
-// A grammar for doubles suitable for std::stod without locale support.
-// See also: http://en.cppreference.com/w/cpp/string/basic_string/stof
-
-using namespace tao::TAOCPP_PEGTL_NAMESPACE;
 
 // clang-format off
 struct plus_minus : opt< one< '+', '-' > > {};
@@ -77,13 +71,13 @@ struct action< double_::grammar >
 
 } // namespace sum
 
-void sum_single(CharacterVector& x, NumericVector& out, int i){
 
-  if(x[i] == NA_STRING){
-    out[i] = NA_REAL;
+void sum_single(Rcpp::CharacterVector& x, Rcpp::NumericVector& out, int i){
+
+  if(x[i] == R_NaString){
+    out[i] = R_NaReal;
     return;
   }
-
   const std::string holding = Rcpp::as<std::string>(x[i]);
   double output;
 
@@ -92,15 +86,15 @@ void sum_single(CharacterVector& x, NumericVector& out, int i){
   if( parse< sum::grammar, sum::action >(din, output)) {
     out[i] = output;
   } else {
-    out[i] = NA_REAL;
+    out[i] = R_NaReal;
   }
 }
 
 //[[Rcpp::export]]
-NumericVector peg_sum(CharacterVector x){
+Rcpp::NumericVector peg_sum(Rcpp::CharacterVector x){
 
   unsigned int input_size = x.size();
-  NumericVector output(input_size);
+  Rcpp::NumericVector output(input_size);
 
   for(unsigned int i = 0; i < input_size; i++){
     sum_single(x, output, i);
