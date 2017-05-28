@@ -1,17 +1,24 @@
-# Sample .travis.yml for R projects
-
 language: r
 warnings_are_errors: false
 sudo: required
-
+compiler:
+  - gcc
+  - clang
+install:
+    - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - gcc-4.8
+    - g++-4.8
+    - clang
 env:
  global:
    - CRAN: http://cran.rstudio.com
-
 r_packages:
    - testthat
    - knitr
    - Rcpp
-notifications:
-  email:
-    on_failure: change
+
