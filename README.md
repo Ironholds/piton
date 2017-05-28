@@ -1,7 +1,9 @@
 # Parsing Expression Grammars in Rcpp
 [![Travis-CI Build Status](https://travis-ci.org/Ironholds/piton.svg?branch=master)](https://travis-ci.org/Ironholds/piton) ![downloads](http://cranlogs.r-pkg.org/badges/grand-total/piton)
 
-`piton` provides platform-independent [parsing expression grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) support in Rcpp. It wraps the [PEGTL](https://github.com/taocpp/PEGTL) library by Colin Hirsch and Daniel Frey, which is header-only and so can be imported into other packages.
+[Parsing Expression Grammars](https://en.wikipedia.org/wiki/Parsing_expression_grammar) (PEGs) are a way of defining formal grammars for formatted data that allow you to identify matched structures and then take actions on them. They're already used in R in the [readr](https://github.com/tidyverse/readr) package, which is what makes readr so dang fast at type identification and parsing tabular data, but there's not historically been a standard way of defining and using them.
+
+`piton` changes this, provides platform-independent PEG support in Rcpp. It wraps the [PEGTL](https://github.com/taocpp/PEGTL) library by Colin Hirsch and Daniel Frey, which is header-only and so can be imported into other packages.
 
 Please note that this project is released with a [Contributor Code of Conduct](https://github.com/Ironholds/piton/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
 
