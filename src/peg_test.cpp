@@ -2,41 +2,53 @@
 #include <pegtl.hpp>
 using namespace tao::TAOCPP_PEGTL_NAMESPACE;
 
-namespace double_{
+namespace double_
+{
 
-  struct plus_minus : opt< one< '+', '-' > > {};
-  struct dot : one< '.' > {};
+struct plus_minus : opt< one< '+', '-' > > {};
+struct dot : one< '.' > {};
 
-  struct inf : seq< istring< 'i', 'n', 'f' >,
-              opt< istring< 'i', 'n', 'i', 't', 'y' > > > {};
+           struct inf : seq< istring< 'i', 'n', 'f' >,
+                        opt< istring< 'i', 'n', 'i', 't', 'y' > > > {};
 
-  struct nan : seq< istring< 'n', 'a', 'n' >,
-              opt< one< '(' >,
-                          plus< alnum >,
-                          one< ')' > > > {};
+           struct nan : seq< istring< 'n', 'a', 'n' >,
+                        opt< one< '(' >,
+                                    plus< alnum >,
+                                    one< ')' > > > {};
 
-  template< typename D >
-  struct number : if_then_else< dot,
-                 plus< D >,
-                 seq< plus< D >, opt< dot, star< D > > > > {};
+           template< typename D >
+           struct number : if_then_else< dot,
+                           plus< D >,
+                           seq< plus< D >, opt< dot, star< D > > > > {};
 
-  struct e : one< 'e', 'E' > {};
-  struct p : one< 'p', 'P' > {};
-  struct exponent : seq< plus_minus, plus< digit > > {};
+           struct e : one< 'e', 'E' > {};
+           struct p : one< 'p', 'P' > {};
+           struct exponent : seq< plus_minus, plus< digit > > {};
 
-  struct decimal : seq< number< digit >, opt< e, exponent > > {};
-  struct binary : seq< one< '0' >, one< 'x', 'X' >, number< xdigit >, opt< p, exponent > > {};
+           struct decimal : seq< number< digit >, opt< e, exponent > > {};
+           struct binary : seq< one< '0' >, one< 'x', 'X' >, number< xdigit >, opt< p, exponent > > {};
 
-  struct grammar : seq< plus_minus, sor< decimal, binary, inf, nan > > {};
+           struct grammar : seq< plus_minus, sor< decimal, binary, inf, nan > > {};
+           // clang-format on
 
 }  // double_
 
-namespace sum {
-struct padded_double : pad< double_::grammar, space > {};
+namespace sum
+{
+struct padded_double
+  : pad< double_::grammar, space >
+{
+};
 
-struct double_list : list< padded_double, one< ',' > >{ };
+struct double_list
+  : list< padded_double, one< ',' > >
+{
+};
 
-struct grammar : seq< double_list, eof >{ };
+struct grammar
+  : seq< double_list, eof >
+{
+};
 
 template< typename Rule >
 struct action
