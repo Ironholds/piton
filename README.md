@@ -3,6 +3,8 @@
 
 `piton` provides platform-independent [parsing expression grammar](https://en.wikipedia.org/wiki/Parsing_expression_grammar) support in Rcpp. It wraps the [PEGTL](https://github.com/taocpp/PEGTL) library by Colin Hirsch and Daniel Frey, which is header-only and so can be imported into other packages.
 
+Please note that this project is released with a [Contributor Code of Conduct](https://github.com/Ironholds/piton/blob/master/CONDUCT.md). By participating in this project you agree to abide by its terms.
+
 ## Use
 
 An example of PEGs is included in the package, and takes a comma-separated set of
@@ -22,17 +24,17 @@ peg_sum("1,2,  5, 91, 34")
 3. Write and expose your grammar
 4. Done!
 
-The [PEGTL docs](https://github.com/taocpp/PEGTL/blob/master/doc/README.md) contain quite a bit of documentation on how the underlying library works, and [various examples of PEGs](https://github.com/taocpp/PEGTL/blob/master/doc/Contrib-and-Examples.md) are included within the package itself.
+The [PEGTL docs](https://github.com/taocpp/PEGTL/blob/master/doc/README.md) contain quite a bit of documentation on how the underlying library works, and [various examples of PEGs](https://github.com/taocpp/PEGTL/blob/master/doc/Contrib-and-Examples.md) are included within the package itself. Integration with Rcpp is pretty clean, although developers may benefit from not explicitly using the Rcpp namespace due to a couple of collisions with the `PEGTL` namespace.
 
 ## Installation
 
-Once it's on CRAN:
+On CRAN:
 
 ```
 install.packages("piton")
 ```
 
-Until then:
+And for the development version:
 
 ```
 devtools::install_github("ironholds/piton")
