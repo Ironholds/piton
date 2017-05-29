@@ -5,9 +5,9 @@ warnings_are_errors: false
 sudo: required
 
 env:
- - CXX=g++-4.8
- global:
-   - CRAN: http://cran.rstudio.com
+  global:
+    - CRAN: http://cran.rstudio.com
+    - CXX=g++-4.8
 addons:
   apt:
     sources:
