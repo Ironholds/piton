@@ -1,7 +1,7 @@
 Package: piton
 Type: Package
 Title: Parsing Expression Grammars in Rcpp
-Version: 0.1.0
+Version: 0.1.1
 URL: https://www.github.com/Ironholds/piton
 BugReports: https://www.github.com/Ironholds/piton/issues
 Author: Oliver Keyes [aut, cre], Colin Hirsch [cph], Daniel Frey [cph]
@@ -17,4 +17,4 @@ Imports: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 6.0.1
 Suggests: testthat
-Date: 2017-05-27
+Date: 2017-06-05

@@ -78,7 +78,7 @@ void sum_single(Rcpp::CharacterVector& x, Rcpp::NumericVector& out, int i){
     return;
   }
   const std::string holding = Rcpp::as<std::string>(x[i]);
-  double output;
+  double output = 0.0;
 
   memory_input<> din(holding, "moot");
 
