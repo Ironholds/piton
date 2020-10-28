@@ -1,12 +1,12 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_REP_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_REP_HPP
+#ifndef TAO_PEGTL_INTERNAL_REP_HPP
+#define TAO_PEGTL_INTERNAL_REP_HPP
 
 #include "../config.hpp"
 
-#include "rule_conjunction.hpp"
+#include "seq.hpp"
 #include "skip_control.hpp"
 #include "trivial.hpp"
 
@@ -17,12 +17,15 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          template< unsigned Num, typename... Rules >
-         struct rep;
+         struct rep
+            : rep< Num, seq< Rules... > >
+         {
+         };
 
          template< unsigned Num >
          struct rep< Num >
@@ -30,21 +33,23 @@ namespace tao
          {
          };
 
-         template< typename Rule, typename... Rules >
-         struct rep< 0, Rule, Rules... >
+         template< typename Rule >
+         struct rep< 0, Rule >
             : trivial< true >
          {
          };
 
-         template< unsigned Num, typename... Rules >
-         struct rep
+         template< unsigned Num, typename Rule >
+         struct rep< Num, Rule >
          {
-            using analyze_t = analysis::counted< analysis::rule_type::SEQ, Num, Rules... >;
+            using analyze_t = analysis::counted< analysis::rule_type::seq, Num, Rule >;
 
             template< apply_mode A,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
@@ -53,7 +58,7 @@ namespace tao
                using m_t = decltype( m );
 
                for( unsigned i = 0; i != Num; ++i ) {
-                  if( !rule_conjunction< Rules... >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... ) ) {
+                  if( !Control< Rule >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... ) ) {
                      return false;
                   }
                }
@@ -68,7 +73,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

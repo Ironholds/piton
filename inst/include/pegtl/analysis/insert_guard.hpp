@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_ANALYSIS_INSERT_GUARD_HPP
-#define TAOCPP_PEGTL_INCLUDE_ANALYSIS_INSERT_GUARD_HPP
+#ifndef TAO_PEGTL_ANALYSIS_INSERT_GUARD_HPP
+#define TAO_PEGTL_ANALYSIS_INSERT_GUARD_HPP
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace analysis
       {
@@ -18,17 +18,19 @@ namespace tao
          class insert_guard
          {
          public:
+            insert_guard( C& container, const typename C::value_type& value )
+               : m_i( container.insert( value ) ),
+                 m_c( &container )
+            {
+            }
+
+            insert_guard( const insert_guard& ) = delete;
+
             insert_guard( insert_guard&& other ) noexcept
                : m_i( other.m_i ),
                  m_c( other.m_c )
             {
                other.m_c = nullptr;
-            }
-
-            insert_guard( C& container, const typename C::value_type& value )
-               : m_i( container.insert( value ) ),
-                 m_c( &container )
-            {
             }
 
             ~insert_guard()
@@ -38,8 +40,8 @@ namespace tao
                }
             }
 
-            insert_guard( const insert_guard& ) = delete;
             void operator=( const insert_guard& ) = delete;
+            void operator=( insert_guard&& ) = delete;
 
             explicit operator bool() const noexcept
             {
@@ -59,7 +61,7 @@ namespace tao
 
       }  // namespace analysis
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

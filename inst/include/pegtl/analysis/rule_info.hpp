@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_ANALYSIS_RULE_INFO_HPP
-#define TAOCPP_PEGTL_INCLUDE_ANALYSIS_RULE_INFO_HPP
+#ifndef TAO_PEGTL_ANALYSIS_RULE_INFO_HPP
+#define TAO_PEGTL_ANALYSIS_RULE_INFO_HPP
 
 #include <string>
 #include <vector>
@@ -13,13 +13,13 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace analysis
       {
          struct rule_info
          {
-            explicit rule_info( const rule_type in_type )
+            explicit rule_info( const rule_type in_type ) noexcept
                : type( in_type )
             {
             }
@@ -30,7 +30,7 @@ namespace tao
 
       }  // namespace analysis
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

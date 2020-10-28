@@ -1,8 +1,8 @@
-// Copyright (c) 2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2017-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_ARGV_INPUT_HPP
-#define TAOCPP_PEGTL_INCLUDE_ARGV_INPUT_HPP
+#ifndef TAO_PEGTL_ARGV_INPUT_HPP
+#define TAO_PEGTL_ARGV_INPUT_HPP
 
 #include <cstddef>
 #include <sstream>
@@ -16,7 +16,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -29,7 +29,7 @@ namespace tao
 
       }  // namespace internal
 
-      template< tracking_mode P = tracking_mode::IMMEDIATE, typename Eol = eol::lf_crlf >
+      template< tracking_mode P = tracking_mode::eager, typename Eol = eol::lf_crlf >
       struct argv_input
          : public memory_input< P, Eol >
       {
@@ -45,7 +45,12 @@ namespace tao
          }
       };
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+#ifdef __cpp_deduction_guides
+      template< typename... Ts >
+      argv_input( Ts&&... )->argv_input<>;
+#endif
+
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

@@ -1,8 +1,8 @@
-// Copyright (c) 2016-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2016-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_CSTRING_READER_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_CSTRING_READER_HPP
+#ifndef TAO_PEGTL_INTERNAL_CSTRING_READER_HPP
+#define TAO_PEGTL_INTERNAL_CSTRING_READER_HPP
 
 #include <cassert>
 #include <cstddef>
@@ -12,7 +12,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -21,7 +21,7 @@ namespace tao
             explicit cstring_reader( const char* zero_terminated ) noexcept
                : m_cstring( zero_terminated )
             {
-               assert( m_cstring );
+               assert( m_cstring != nullptr );
             }
 
             std::size_t operator()( char* buffer, const std::size_t length ) noexcept
@@ -42,7 +42,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

@@ -1,23 +1,12 @@
-// Copyright (c) 2016-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2016-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_EOL_HPP
-#define TAOCPP_PEGTL_INCLUDE_EOL_HPP
-
-#include <cstddef>
-#include <utility>
+#ifndef TAO_PEGTL_EOL_HPP
+#define TAO_PEGTL_EOL_HPP
 
 #include "config.hpp"
 
-namespace tao
-{
-   namespace TAOCPP_PEGTL_NAMESPACE
-   {
-      using eol_pair = std::pair< bool, std::size_t >;
-
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
-
-}  // namespace tao
+#include "internal/eol.hpp"
 
 #include "internal/cr_crlf_eol.hpp"
 #include "internal/cr_eol.hpp"
@@ -25,11 +14,9 @@ namespace tao
 #include "internal/lf_crlf_eol.hpp"
 #include "internal/lf_eol.hpp"
 
-#include "internal/eol.hpp"
-
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       inline namespace ascii
       {
@@ -47,7 +34,7 @@ namespace tao
 
       }  // namespace ascii
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

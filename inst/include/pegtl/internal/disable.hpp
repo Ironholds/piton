@@ -1,12 +1,11 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_DISABLE_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_DISABLE_HPP
+#ifndef TAO_PEGTL_INTERNAL_DISABLE_HPP
+#define TAO_PEGTL_INTERNAL_DISABLE_HPP
 
 #include "../config.hpp"
 
-#include "duseltronik.hpp"
 #include "seq.hpp"
 #include "skip_control.hpp"
 
@@ -17,24 +16,32 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          template< typename... Rules >
          struct disable
+            : disable< seq< Rules... > >
          {
-            using analyze_t = analysis::generic< analysis::rule_type::SEQ, Rules... >;
+         };
+
+         template< typename Rule >
+         struct disable< Rule >
+         {
+            using analyze_t = analysis::generic< analysis::rule_type::seq, Rule >;
 
             template< apply_mode,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
             {
-               return duseltronik< seq< Rules... >, apply_mode::NOTHING, M, Action, Control >::match( in, st... );
+               return Control< Rule >::template match< apply_mode::nothing, M, Action, Control >( in, st... );
             }
          };
 
@@ -45,7 +52,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

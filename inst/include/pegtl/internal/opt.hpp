@@ -1,14 +1,13 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_OPT_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_OPT_HPP
+#ifndef TAO_PEGTL_INTERNAL_OPT_HPP
+#define TAO_PEGTL_INTERNAL_OPT_HPP
 
 #include <type_traits>
 
 #include "../config.hpp"
 
-#include "duseltronik.hpp"
 #include "seq.hpp"
 #include "skip_control.hpp"
 #include "trivial.hpp"
@@ -20,12 +19,15 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          template< typename... Rules >
-         struct opt;
+         struct opt
+            : opt< seq< Rules... > >
+         {
+         };
 
          template<>
          struct opt<>
@@ -33,22 +35,22 @@ namespace tao
          {
          };
 
-         template< typename... Rules >
-         struct opt
+         template< typename Rule >
+         struct opt< Rule >
          {
-            using analyze_t = analysis::generic< analysis::rule_type::OPT, Rules... >;
+            using analyze_t = analysis::generic< analysis::rule_type::opt, Rule >;
 
             template< apply_mode A,
                       rewind_mode,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
             {
-               if( !in.empty() ) {
-                  duseltronik< seq< Rules... >, A, rewind_mode::REQUIRED, Action, Control >::match( in, st... );
-               }
+               Control< Rule >::template match< A, rewind_mode::required, Action, Control >( in, st... );
                return true;
             }
          };
@@ -60,7 +62,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

@@ -1,118 +1,47 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_CONTRIB_RAW_STRING_HPP
-#define TAOCPP_PEGTL_INCLUDE_CONTRIB_RAW_STRING_HPP
+#ifndef TAO_PEGTL_CONTRIB_RAW_STRING_HPP
+#define TAO_PEGTL_CONTRIB_RAW_STRING_HPP
+
+#include <cstddef>
+#include <type_traits>
 
 #include "../apply_mode.hpp"
 #include "../config.hpp"
-#include "../nothing.hpp"
 #include "../rewind_mode.hpp"
 
-#include "../internal/iterator.hpp"
+#include "../internal/bytes.hpp"
+#include "../internal/eof.hpp"
+#include "../internal/eol.hpp"
 #include "../internal/must.hpp"
+#include "../internal/not_at.hpp"
+#include "../internal/seq.hpp"
 #include "../internal/skip_control.hpp"
-#include "../internal/state.hpp"
-#include "../internal/until.hpp"
+#include "../internal/star.hpp"
 
 #include "../analysis/generic.hpp"
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
-         template< char Open, char Marker, char Close >
-         struct raw_string_tag
-         {
-         };
-
-         template< bool use_action, bool use_apply0, typename Tag >
-         struct raw_string_state_apply;
-
-         template< typename Tag >
-         struct raw_string_state_apply< false, false, Tag >
-         {
-            template< template< typename... > class,
-                      template< typename... > class,
-                      typename State,
-                      typename Input,
-                      typename... States >
-            static void success( const State&, const Input&, States&&... )
-            {
-            }
-         };
-
-         template< typename Tag >
-         struct raw_string_state_apply< true, false, Tag >
-         {
-            template< template< typename... > class Action,
-                      template< typename... > class Control,
-                      typename State,
-                      typename Input,
-                      typename... States >
-            static void success( const State& s, const Input& in, States&&... st )
-            {
-               Control< Tag >::template apply< Action >( s.iter, in, st... );
-            }
-         };
-
-         template< typename Tag >
-         struct raw_string_state_apply< true, true, Tag >
-         {
-            template< template< typename... > class Action,
-                      template< typename... > class Control,
-                      typename State,
-                      typename Input,
-                      typename... States >
-            static void success( const State&, const Input& in, States&&... st )
-            {
-               Control< Tag >::template apply0< Action >( in, st... );
-            }
-         };
-
-         template< typename Tag, typename Iterator >
-         struct raw_string_state
-         {
-            template< typename Input, typename... States >
-            raw_string_state( const Input&, States&&... )
-            {
-            }
-
-            template< apply_mode A,
-                      rewind_mode,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
-                      typename Input,
-                      typename... States >
-            void success( Input& in, States&&... st ) const
-            {
-               constexpr bool use_action = ( A == apply_mode::ACTION ) && ( !is_nothing< Action, Tag >::value );
-               constexpr bool use_apply0 = use_action && has_apply0< Action< Tag >, type_list< States... > >::value;
-               raw_string_state_apply< use_action, use_apply0, Tag >::template success< Action, Control >( *this, in, st... );
-               in.bump_in_this_line( marker_size );
-            }
-
-            raw_string_state( const raw_string_state& ) = delete;
-            void operator=( const raw_string_state& ) = delete;
-
-            Iterator iter;
-            std::size_t marker_size = 0;
-         };
-
          template< char Open, char Marker >
          struct raw_string_open
          {
-            using analyze_t = analysis::generic< analysis::rule_type::ANY >;
+            using analyze_t = analysis::generic< analysis::rule_type::any >;
 
             template< apply_mode A,
                       rewind_mode,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
-                      typename State >
-            static bool match( Input& in, State& ls )
+                      typename... States >
+            static bool match( Input& in, std::size_t& marker_size, States&&... /*unused*/ ) noexcept( noexcept( in.size( 0 ) ) )
             {
                if( in.empty() || ( in.peek_char( 0 ) != Open ) ) {
                   return false;
@@ -120,10 +49,9 @@ namespace tao
                for( std::size_t i = 1; i < in.size( i + 1 ); ++i ) {
                   switch( const auto c = in.peek_char( i ) ) {
                      case Open:
-                        ls.marker_size = i + 1;
-                        in.bump( ls.marker_size );
+                        marker_size = i + 1;
+                        in.bump_in_this_line( marker_size );
                         eol::match( in );
-                        ls.iter = in.iterator();
                         return true;
                      case Marker:
                         break;
@@ -143,26 +71,28 @@ namespace tao
          template< char Marker, char Close >
          struct at_raw_string_close
          {
-            using analyze_t = analysis::generic< analysis::rule_type::ANY >;
+            using analyze_t = analysis::generic< analysis::rule_type::opt >;
 
             template< apply_mode A,
                       rewind_mode,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
-                      typename State >
-            static bool match( Input& in, const State& ls )
+                      typename... States >
+            static bool match( Input& in, const std::size_t& marker_size, States&&... /*unused*/ ) noexcept( noexcept( in.size( 0 ) ) )
             {
-               if( in.size( ls.marker_size ) < ls.marker_size ) {
+               if( in.size( marker_size ) < marker_size ) {
                   return false;
                }
                if( in.peek_char( 0 ) != Close ) {
                   return false;
                }
-               if( in.peek_char( ls.marker_size - 1 ) != Close ) {
+               if( in.peek_char( marker_size - 1 ) != Close ) {
                   return false;
                }
-               for( std::size_t i = 0; i < ls.marker_size - 2; ++i ) {
+               for( std::size_t i = 0; i < ( marker_size - 2 ); ++i ) {
                   if( in.peek_char( i + 1 ) != Marker ) {
                      return false;
                   }
@@ -176,32 +106,65 @@ namespace tao
          {
          };
 
-         template< class Tag, typename... Rules >
-         struct raw_string_switch_state
+         template< typename Cond, typename... Rules >
+         struct raw_string_until;
+
+         template< typename Cond >
+         struct raw_string_until< Cond >
          {
-            using analyze_t = analysis::generic< analysis::rule_type::SEQ, Rules... >;
+            using analyze_t = analysis::generic< analysis::rule_type::seq, star< not_at< Cond >, not_at< eof >, bytes< 1 > >, Cond >;
 
             template< apply_mode A,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
-            static bool match( Input& in, States&&... st )
+            static bool match( Input& in, const std::size_t& marker_size, States&&... st )
             {
-               using Iterator = typename Input::iterator_t;
-               raw_string_state< Tag, Iterator > s( const_cast< const Input& >( in ), st... );
+               auto m = in.template mark< M >();
 
-               if( duseltronik< seq< Rules... >, A, M, Action, Control >::match( in, s ) ) {
-                  s.template success< A, M, Action, Control >( in, st... );
-                  return true;
+               while( !Control< Cond >::template match< A, rewind_mode::required, Action, Control >( in, marker_size, st... ) ) {
+                  if( in.empty() ) {
+                     return false;
+                  }
+                  in.bump();
                }
-               return false;
+               return m( true );
             }
          };
 
-         template< typename Tag, typename... Rules >
-         struct skip_control< raw_string_switch_state< Tag, Rules... > > : std::true_type
+         template< typename Cond, typename... Rules >
+         struct raw_string_until
+         {
+            using analyze_t = analysis::generic< analysis::rule_type::seq, star< not_at< Cond >, not_at< eof >, Rules... >, Cond >;
+
+            template< apply_mode A,
+                      rewind_mode M,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
+                      typename Input,
+                      typename... States >
+            static bool match( Input& in, const std::size_t& marker_size, States&&... st )
+            {
+               auto m = in.template mark< M >();
+               using m_t = decltype( m );
+
+               while( !Control< Cond >::template match< A, rewind_mode::required, Action, Control >( in, marker_size, st... ) ) {
+                  if( in.empty() || ( !Control< seq< Rules... > >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... ) ) ) {
+                     return false;
+                  }
+               }
+               return m( true );
+            }
+         };
+
+         template< typename Cond, typename... Rules >
+         struct skip_control< raw_string_until< Cond, Rules... > > : std::true_type
          {
          };
 
@@ -232,20 +195,39 @@ namespace tao
       // introduced newline-specific replacements in Lua 5.2, which we do not
       // support on the grammar level.
 
-      template< char Open, char Marker, char Close >
+      template< char Open, char Marker, char Close, typename... Contents >
       struct raw_string
-         : internal::raw_string_switch_state< internal::raw_string_tag< Open, Marker, Close >,
-                                              internal::raw_string_open< Open, Marker >,
-                                              internal::must< internal::until< internal::at_raw_string_close< Marker, Close > > > >
       {
-         // This is used to bind an action to the content.
-         using content = internal::raw_string_tag< Open, Marker, Close >;
+         // This is used for binding the apply()-method and for error-reporting
+         // when a raw string is not closed properly or has invalid content.
+         struct content
+            : internal::raw_string_until< internal::at_raw_string_close< Marker, Close >, Contents... >
+         {
+         };
 
-         // This is used for error-reporting when a raw string is not closed properly.
-         using close = internal::until< internal::at_raw_string_close< Marker, Close > >;
+         using analyze_t = typename internal::seq< internal::bytes< 1 >, content, internal::bytes< 1 > >::analyze_t;
+
+         template< apply_mode A,
+                   rewind_mode M,
+                   template< typename... >
+                   class Action,
+                   template< typename... >
+                   class Control,
+                   typename Input,
+                   typename... States >
+         static bool match( Input& in, States&&... st )
+         {
+            std::size_t marker_size;
+            if( internal::raw_string_open< Open, Marker >::template match< A, M, Action, Control >( in, marker_size, st... ) ) {
+               internal::must< content >::template match< A, M, Action, Control >( in, marker_size, st... );
+               in.bump_in_this_line( marker_size );
+               return true;
+            }
+            return false;
+         }
       };
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

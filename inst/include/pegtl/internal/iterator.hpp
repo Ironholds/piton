@@ -1,8 +1,8 @@
-// Copyright (c) 2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2017-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_ITERATOR_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_ITERATOR_HPP
+#ifndef TAO_PEGTL_INTERNAL_ITERATOR_HPP
+#define TAO_PEGTL_INTERNAL_ITERATOR_HPP
 
 #include <cstdlib>
 
@@ -10,7 +10,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -19,10 +19,7 @@ namespace tao
             iterator() noexcept = default;
 
             explicit iterator( const char* in_data ) noexcept
-               : data( in_data ),
-                 byte( 0 ),
-                 line( 1 ),
-                 byte_in_line( 0 )
+               : data( in_data )
             {
             }
 
@@ -35,18 +32,28 @@ namespace tao
             }
 
             iterator( const iterator& ) = default;
+            iterator( iterator&& ) = default;
+
+            ~iterator() = default;
+
             iterator& operator=( const iterator& ) = default;
+            iterator& operator=( iterator&& ) = default;
 
-            const char* data;
+            void reset() noexcept
+            {
+               *this = iterator();
+            }
 
-            std::size_t byte;
-            std::size_t line;
-            std::size_t byte_in_line;
+            const char* data = nullptr;
+
+            std::size_t byte = 0;
+            std::size_t line = 1;
+            std::size_t byte_in_line = 0;
          };
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

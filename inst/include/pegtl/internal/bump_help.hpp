@@ -1,8 +1,8 @@
-// Copyright (c) 2015-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2015-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_BUMP_UTIL_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_BUMP_UTIL_HPP
+#ifndef TAO_PEGTL_INTERNAL_BUMP_HELP_HPP
+#define TAO_PEGTL_INTERNAL_BUMP_HELP_HPP
 
 #include <cstddef>
 #include <type_traits>
@@ -13,7 +13,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -51,13 +51,12 @@ namespace tao
          template< result_on_found R, typename Input, typename Char, Char... Cs >
          void bump_help( Input& in, const std::size_t count ) noexcept
          {
-            using eol_t = typename Input::eol_t;
-            bump_impl< bool_and< ( Cs != eol_t::ch )... >::value != bool( R ) >::bump( in, count );
+            bump_impl< bool_and< ( Cs != Input::eol_t::ch )... >::value != bool( R ) >::bump( in, count );
          }
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

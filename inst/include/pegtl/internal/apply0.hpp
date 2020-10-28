@@ -1,46 +1,59 @@
-// Copyright (c) 2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2017-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_APPLY0_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_APPLY0_HPP
+#ifndef TAO_PEGTL_INTERNAL_APPLY0_HPP
+#define TAO_PEGTL_INTERNAL_APPLY0_HPP
 
 #include "../config.hpp"
 
+#include "apply0_single.hpp"
 #include "skip_control.hpp"
-#include "trivial.hpp"
 
 #include "../analysis/counted.hpp"
+#include "../apply_mode.hpp"
+#include "../rewind_mode.hpp"
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          template< apply_mode A, typename... Actions >
          struct apply0_impl;
 
-         template< typename... Actions >
-         struct apply0_impl< apply_mode::ACTION, Actions... >
+         template<>
+         struct apply0_impl< apply_mode::action >
          {
             template< typename... States >
-            static bool match( States&&... st )
+            static bool match( States&&... /*unused*/ ) noexcept
             {
-#ifdef __cpp_fold_expressions
-               ( Actions::apply0( st... ), ... );
-#else
-               using swallow = bool[];
-               (void)swallow{ ( Actions::apply0( st... ), true )..., true };
-#endif
                return true;
             }
          };
 
          template< typename... Actions >
-         struct apply0_impl< apply_mode::NOTHING, Actions... >
+         struct apply0_impl< apply_mode::action, Actions... >
          {
             template< typename... States >
-            static bool match( States&&... )
+            static bool match( States&&... st )
+            {
+#ifdef __cpp_fold_expressions
+               return ( apply0_single< Actions >::match( st... ) && ... );
+#else
+               bool result = true;
+               using swallow = bool[];
+               (void)swallow{ result = result && apply0_single< Actions >::match( st... )... };
+               return result;
+#endif
+            }
+         };
+
+         template< typename... Actions >
+         struct apply0_impl< apply_mode::nothing, Actions... >
+         {
+            template< typename... States >
+            static bool match( States&&... /*unused*/ ) noexcept
             {
                return true;
             }
@@ -49,15 +62,17 @@ namespace tao
          template< typename... Actions >
          struct apply0
          {
-            using analyze_t = analysis::counted< analysis::rule_type::ANY, 0 >;
+            using analyze_t = analysis::counted< analysis::rule_type::any, 0 >;
 
             template< apply_mode A,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
-            static bool match( Input&, States&&... st )
+            static bool match( Input& /*unused*/, States&&... st )
             {
                return apply0_impl< A, Actions... >::match( st... );
             }
@@ -70,7 +85,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

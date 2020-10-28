@@ -1,14 +1,13 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_STAR_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_STAR_HPP
+#ifndef TAO_PEGTL_INTERNAL_STAR_HPP
+#define TAO_PEGTL_INTERNAL_STAR_HPP
 
 #include <type_traits>
 
 #include "../config.hpp"
 
-#include "duseltronik.hpp"
 #include "seq.hpp"
 #include "skip_control.hpp"
 
@@ -19,24 +18,31 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          template< typename Rule, typename... Rules >
          struct star
+            : star< seq< Rule, Rules... > >
+         {};
+
+         template< typename Rule >
+         struct star< Rule >
          {
-            using analyze_t = analysis::generic< analysis::rule_type::OPT, Rule, Rules..., star >;
+            using analyze_t = analysis::generic< analysis::rule_type::opt, Rule, star >;
 
             template< apply_mode A,
                       rewind_mode,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
             {
-               while( duseltronik< seq< Rule, Rules... >, A, rewind_mode::REQUIRED, Action, Control >::match( in, st... ) ) {
+               while( Control< Rule >::template match< A, rewind_mode::required, Action, Control >( in, st... ) ) {
                }
                return true;
             }
@@ -49,7 +55,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

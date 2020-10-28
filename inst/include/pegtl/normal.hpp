@@ -1,80 +1,95 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_NORMAL_HPP
-#define TAOCPP_PEGTL_INCLUDE_NORMAL_HPP
+#ifndef TAO_PEGTL_NORMAL_HPP
+#define TAO_PEGTL_NORMAL_HPP
+
+#include <type_traits>
+#include <utility>
 
 #include "apply_mode.hpp"
 #include "config.hpp"
-#include "nothing.hpp"
+#include "match.hpp"
 #include "parse_error.hpp"
 #include "rewind_mode.hpp"
 
 #include "internal/demangle.hpp"
-#include "internal/dusel_mode.hpp"
-#include "internal/duseltronik.hpp"
-#include "internal/has_apply0.hpp"
-#include "internal/skip_control.hpp"
+#include "internal/has_match.hpp"
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       template< typename Rule >
       struct normal
       {
          template< typename Input, typename... States >
-         static void start( const Input&, States&&... ) noexcept
+         static void start( const Input& /*unused*/, States&&... /*unused*/ ) noexcept
          {
          }
 
          template< typename Input, typename... States >
-         static void success( const Input&, States&&... ) noexcept
+         static void success( const Input& /*unused*/, States&&... /*unused*/ ) noexcept
          {
          }
 
          template< typename Input, typename... States >
-         static void failure( const Input&, States&&... ) noexcept
+         static void failure( const Input& /*unused*/, States&&... /*unused*/ ) noexcept
          {
          }
 
          template< typename Input, typename... States >
-         static void raise( const Input& in, States&&... )
+         static void raise( const Input& in, States&&... /*unused*/ )
          {
             throw parse_error( "parse error matching " + internal::demangle< Rule >(), in );
          }
 
          template< template< typename... > class Action, typename Input, typename... States >
-         static void apply0( const Input&, States&&... st )
+         static auto apply0( const Input& /*unused*/, States&&... st )
+            -> decltype( Action< Rule >::apply0( st... ) )
          {
-            Action< Rule >::apply0( st... );
+            return Action< Rule >::apply0( st... );
          }
 
          template< template< typename... > class Action, typename Iterator, typename Input, typename... States >
-         static void apply( const Iterator& begin, const Input& in, States&&... st )
+         static auto apply( const Iterator& begin, const Input& in, States&&... st )
+            -> decltype( Action< Rule >::apply( std::declval< typename Input::action_t >(), st... ) )
          {
-            using action_t = typename Input::action_t;
-            const action_t action_input( begin, in );
-            Action< Rule >::apply( action_input, st... );
+            const typename Input::action_t action_input( begin, in );
+            return Action< Rule >::apply( action_input, st... );
          }
 
          template< apply_mode A,
                    rewind_mode M,
-                   template< typename... > class Action,
-                   template< typename... > class Control,
+                   template< typename... >
+                   class Action,
+                   template< typename... >
+                   class Control,
                    typename Input,
                    typename... States >
-         static bool match( Input& in, States&&... st )
+         static auto match( Input& in, States&&... st )
+            -> typename std::enable_if< internal::has_match< void, Rule, A, M, Action, Control, Input, States... >::value, bool >::type
          {
-            constexpr bool use_control = !internal::skip_control< Rule >::value;
-            constexpr bool use_action = use_control && ( A == apply_mode::ACTION ) && ( !is_nothing< Action, Rule >::value );
-            constexpr bool use_apply0 = use_action && internal::has_apply0< Action< Rule >, internal::type_list< States... > >::value;
-            constexpr dusel_mode mode = static_cast< dusel_mode >( static_cast< char >( use_control ) + static_cast< char >( use_action ) + static_cast< char >( use_apply0 ) );
-            return internal::duseltronik< Rule, A, M, Action, Control, mode >::match( in, st... );
+            return Action< Rule >::template match< Rule, A, M, Action, Control >( in, st... );
+         }
+
+         template< apply_mode A,
+                   rewind_mode M,
+                   template< typename... >
+                   class Action,
+                   template< typename... >
+                   class Control,
+                   typename Input,
+                   typename... States,
+                   int = 1 >
+         static auto match( Input& in, States&&... st )
+            -> typename std::enable_if< !internal::has_match< void, Rule, A, M, Action, Control, Input, States... >::value, bool >::type
+         {
+            return TAO_PEGTL_NAMESPACE::match< Rule, A, M, Action, Control >( in, st... );
          }
       };
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

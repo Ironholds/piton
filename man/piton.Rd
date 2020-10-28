@@ -4,7 +4,6 @@
 \name{piton}
 \alias{piton}
 \alias{piton-package}
-\alias{piton-package}
 \title{Parsing Expression Grammars in Rcpp}
 \description{
 This package wraps the PEGTL library to make Parsing Expression Grammars

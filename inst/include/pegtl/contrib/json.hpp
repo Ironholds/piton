@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_CONTRIB_JSON_HPP
-#define TAOCPP_PEGTL_INCLUDE_CONTRIB_JSON_HPP
+#ifndef TAO_PEGTL_CONTRIB_JSON_HPP
+#define TAO_PEGTL_CONTRIB_JSON_HPP
 
 #include "../ascii.hpp"
 #include "../config.hpp"
@@ -13,11 +13,11 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace json
       {
-         // JSON grammar according to RFC 7159 (for UTF-8 encoded JSON only).
+         // JSON grammar according to RFC 8259
 
          // clang-format off
          struct ws : one< ' ', '\t', '\n', '\r' > {};
@@ -32,14 +32,14 @@ namespace tao
          struct name_separator : pad< one< ':' >, ws > {};
          struct value_separator : padr< one< ',' > > {};
 
-         struct false_ : TAOCPP_PEGTL_STRING( "false" ) {};
-         struct null : TAOCPP_PEGTL_STRING( "null" ) {};
-         struct true_ : TAOCPP_PEGTL_STRING( "true" ) {};
+         struct false_ : string< 'f', 'a', 'l', 's', 'e' > {}; // NOLINT
+         struct null : string< 'n', 'u', 'l', 'l' > {};
+         struct true_ : string< 't', 'r', 'u', 'e' > {}; // NOLINT
 
          struct digits : plus< abnf::DIGIT > {};
          struct exp : seq< one< 'e', 'E' >, opt< one< '-', '+'> >, must< digits > > {};
          struct frac : if_must< one< '.' >, digits > {};
-         struct int_ : sor< one< '0' >, digits > {};
+         struct int_ : sor< one< '0' >, digits > {}; // NOLINT
          struct number : seq< opt< one< '-' > >, int_, opt< frac >, opt< exp > > {};
 
          struct xdigit : abnf::HEXDIG {};
@@ -47,7 +47,7 @@ namespace tao
          struct escaped_char : one< '"', '\\', '/', 'b', 'f', 'n', 'r', 't' > {};
          struct escaped : sor< escaped_char, unicode > {};
          struct unescaped : utf8::range< 0x20, 0x10FFFF > {};
-         struct char_ : if_then_else< one< '\\' >, must< escaped >, unescaped > {};
+         struct char_ : if_then_else< one< '\\' >, must< escaped >, unescaped > {}; // NOLINT
 
          struct string_content : until< at< one< '"' > >, must< char_ > > {};
          struct string : seq< one< '"' >, must< string_content >, any >
@@ -91,7 +91,7 @@ namespace tao
 
       }  // namespace json
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 
