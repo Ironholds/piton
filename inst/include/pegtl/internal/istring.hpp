@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_ISTRING_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_ISTRING_HPP
+#ifndef TAO_PEGTL_INTERNAL_ISTRING_HPP
+#define TAO_PEGTL_INTERNAL_ISTRING_HPP
 
 #include <type_traits>
 
@@ -17,7 +17,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -51,7 +51,7 @@ namespace tao
          template<>
          struct istring_equal<>
          {
-            static bool match( const char* ) noexcept
+            static bool match( const char* /*unused*/ ) noexcept
             {
                return true;
             }
@@ -78,14 +78,14 @@ namespace tao
          template< char... Cs >
          struct istring
          {
-            using analyze_t = analysis::counted< analysis::rule_type::ANY, sizeof...( Cs ) >;
+            using analyze_t = analysis::counted< analysis::rule_type::any, sizeof...( Cs ) >;
 
             template< typename Input >
-            static bool match( Input& in )
+            static bool match( Input& in ) noexcept( noexcept( in.size( 0 ) ) )
             {
                if( in.size( sizeof...( Cs ) ) >= sizeof...( Cs ) ) {
                   if( istring_equal< Cs... >::match( in.current() ) ) {
-                     bump_help< result_on_found::SUCCESS, Input, char, Cs... >( in, sizeof...( Cs ) );
+                     bump_help< result_on_found::success, Input, char, Cs... >( in, sizeof...( Cs ) );
                      return true;
                   }
                }
@@ -100,7 +100,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

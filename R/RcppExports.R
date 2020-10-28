@@ -19,6 +19,6 @@
 #'
 #'@export
 peg_sum <- function(x) {
-    .Call(piton_peg_sum, x)
+    .Call(`_piton_peg_sum`, x)
 }
 

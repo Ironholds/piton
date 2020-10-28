@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_ANY_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_ANY_HPP
+#ifndef TAO_PEGTL_INTERNAL_ANY_HPP
+#define TAO_PEGTL_INTERNAL_ANY_HPP
 
 #include "../config.hpp"
 
@@ -13,7 +13,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -23,10 +23,10 @@ namespace tao
          template<>
          struct any< peek_char >
          {
-            using analyze_t = analysis::generic< analysis::rule_type::ANY >;
+            using analyze_t = analysis::generic< analysis::rule_type::any >;
 
             template< typename Input >
-            static bool match( Input& in )
+            static bool match( Input& in ) noexcept( noexcept( in.empty() ) )
             {
                if( !in.empty() ) {
                   in.bump();
@@ -39,16 +39,14 @@ namespace tao
          template< typename Peek >
          struct any
          {
-            using analyze_t = analysis::generic< analysis::rule_type::ANY >;
+            using analyze_t = analysis::generic< analysis::rule_type::any >;
 
             template< typename Input >
-            static bool match( Input& in )
+            static bool match( Input& in ) noexcept( noexcept( Peek::peek( in ) ) )
             {
-               if( !in.empty() ) {
-                  if( const auto t = Peek::peek( in ) ) {
-                     in.bump( t.size );
-                     return true;
-                  }
+               if( const auto t = Peek::peek( in ) ) {
+                  in.bump( t.size );
+                  return true;
                }
                return false;
             }
@@ -61,7 +59,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // peg_sum
 Rcpp::NumericVector peg_sum(Rcpp::CharacterVector x);
-RcppExport SEXP piton_peg_sum(SEXP xSEXP) {
+RcppExport SEXP _piton_peg_sum(SEXP xSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -15,4 +15,14 @@ BEGIN_RCPP
     rcpp_result_gen = Rcpp::wrap(peg_sum(x));
     return rcpp_result_gen;
 END_RCPP
+}
+
+static const R_CallMethodDef CallEntries[] = {
+    {"_piton_peg_sum", (DL_FUNC) &_piton_peg_sum, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_piton(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
 }

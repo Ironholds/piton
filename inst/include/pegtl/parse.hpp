@@ -1,8 +1,10 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_PARSE_HPP
-#define TAOCPP_PEGTL_INCLUDE_PARSE_HPP
+#ifndef TAO_PEGTL_PARSE_HPP
+#define TAO_PEGTL_PARSE_HPP
+
+#include <cassert>
 
 #include "apply_mode.hpp"
 #include "config.hpp"
@@ -11,15 +13,17 @@
 #include "parse_error.hpp"
 #include "rewind_mode.hpp"
 
+#include "internal/action_input.hpp"
+
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       template< typename Rule,
                 template< typename... > class Action = nothing,
                 template< typename... > class Control = normal,
-                apply_mode A = apply_mode::ACTION,
-                rewind_mode M = rewind_mode::REQUIRED,
+                apply_mode A = apply_mode::action,
+                rewind_mode M = rewind_mode::required,
                 typename Input,
                 typename... States >
       bool parse( Input&& in, States&&... st )
@@ -30,8 +34,8 @@ namespace tao
       template< typename Rule,
                 template< typename... > class Action = nothing,
                 template< typename... > class Control = normal,
-                apply_mode A = apply_mode::ACTION,
-                rewind_mode M = rewind_mode::REQUIRED,
+                apply_mode A = apply_mode::action,
+                rewind_mode M = rewind_mode::required,
                 typename Outer,
                 typename Input,
                 typename... States >
@@ -46,7 +50,7 @@ namespace tao
          }
       }
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

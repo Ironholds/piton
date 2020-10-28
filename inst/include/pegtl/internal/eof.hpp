@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_EOF_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_EOF_HPP
+#ifndef TAO_PEGTL_INTERNAL_EOF_HPP
+#define TAO_PEGTL_INTERNAL_EOF_HPP
 
 #include "../config.hpp"
 
@@ -12,16 +12,16 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
          struct eof
          {
-            using analyze_t = analysis::generic< analysis::rule_type::OPT >;
+            using analyze_t = analysis::generic< analysis::rule_type::opt >;
 
             template< typename Input >
-            static bool match( Input& in )
+            static bool match( Input& in ) noexcept( noexcept( in.empty() ) )
             {
                return in.empty();
             }
@@ -34,7 +34,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 

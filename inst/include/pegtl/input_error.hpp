@@ -1,8 +1,8 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INPUT_ERROR_HPP
-#define TAOCPP_PEGTL_INCLUDE_INPUT_ERROR_HPP
+#ifndef TAO_PEGTL_INPUT_ERROR_HPP
+#define TAO_PEGTL_INPUT_ERROR_HPP
 
 #include <cerrno>
 #include <sstream>
@@ -12,7 +12,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       struct input_error
          : std::runtime_error
@@ -26,16 +26,26 @@ namespace tao
          int errorno;
       };
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 
-#define TAOCPP_PEGTL_THROW_INPUT_ERROR( MESSAGE )                           \
-   do {                                                                     \
-      const int errorno = errno;                                            \
-      std::ostringstream oss;                                               \
-      oss << "pegtl: " << MESSAGE << " errno " << errorno;                  \
-      throw tao::TAOCPP_PEGTL_NAMESPACE::input_error( oss.str(), errorno ); \
+#define TAO_PEGTL_INTERNAL_UNWRAP( ... ) __VA_ARGS__
+
+#define TAO_PEGTL_THROW_INPUT_ERROR( MESSAGE )                                          \
+   do {                                                                                 \
+      const int errorno = errno;                                                        \
+      std::ostringstream oss;                                                           \
+      oss << "pegtl: " << TAO_PEGTL_INTERNAL_UNWRAP( MESSAGE ) << " errno " << errorno; \
+      throw tao::TAO_PEGTL_NAMESPACE::input_error( oss.str(), errorno );                \
+   } while( false )
+
+#define TAO_PEGTL_THROW_INPUT_WIN32_ERROR( MESSAGE )                                             \
+   do {                                                                                          \
+      const int errorno = GetLastError();                                                        \
+      std::ostringstream oss;                                                                    \
+      oss << "pegtl: " << TAO_PEGTL_INTERNAL_UNWRAP( MESSAGE ) << " GetLastError() " << errorno; \
+      throw tao::TAO_PEGTL_NAMESPACE::input_error( oss.str(), errorno );                         \
    } while( false )
 
 #endif

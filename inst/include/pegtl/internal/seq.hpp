@@ -1,12 +1,11 @@
-// Copyright (c) 2014-2017 Dr. Colin Hirsch and Daniel Frey
+// Copyright (c) 2014-2020 Dr. Colin Hirsch and Daniel Frey
 // Please see LICENSE for license or visit https://github.com/taocpp/PEGTL/
 
-#ifndef TAOCPP_PEGTL_INCLUDE_INTERNAL_SEQ_HPP
-#define TAOCPP_PEGTL_INCLUDE_INTERNAL_SEQ_HPP
+#ifndef TAO_PEGTL_INTERNAL_SEQ_HPP
+#define TAO_PEGTL_INTERNAL_SEQ_HPP
 
 #include "../config.hpp"
 
-#include "rule_conjunction.hpp"
 #include "skip_control.hpp"
 #include "trivial.hpp"
 
@@ -17,7 +16,7 @@
 
 namespace tao
 {
-   namespace TAOCPP_PEGTL_NAMESPACE
+   namespace TAO_PEGTL_NAMESPACE
    {
       namespace internal
       {
@@ -37,8 +36,10 @@ namespace tao
 
             template< apply_mode A,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
@@ -50,21 +51,31 @@ namespace tao
          template< typename... Rules >
          struct seq
          {
-            using analyze_t = analysis::generic< analysis::rule_type::SEQ, Rules... >;
+            using analyze_t = analysis::generic< analysis::rule_type::seq, Rules... >;
 
             template< apply_mode A,
                       rewind_mode M,
-                      template< typename... > class Action,
-                      template< typename... > class Control,
+                      template< typename... >
+                      class Action,
+                      template< typename... >
+                      class Control,
                       typename Input,
                       typename... States >
             static bool match( Input& in, States&&... st )
             {
                auto m = in.template mark< M >();
                using m_t = decltype( m );
-               return m( rule_conjunction< Rules... >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... ) );
+#ifdef __cpp_fold_expressions
+               return m( ( Control< Rules >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... ) && ... ) );
+#else
+               bool result = true;
+               using swallow = bool[];
+               (void)swallow{ result = result && Control< Rules >::template match< A, m_t::next_rewind_mode, Action, Control >( in, st... )... };
+               return m( result );
+#endif
             }
-         };
+
+         };  // namespace internal
 
          template< typename... Rules >
          struct skip_control< seq< Rules... > > : std::true_type
@@ -73,7 +84,7 @@ namespace tao
 
       }  // namespace internal
 
-   }  // namespace TAOCPP_PEGTL_NAMESPACE
+   }  // namespace TAO_PEGTL_NAMESPACE
 
 }  // namespace tao
 
