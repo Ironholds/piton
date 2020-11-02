@@ -1,11 +1,11 @@
 Package: piton
 Type: Package
 Title: Parsing Expression Grammars in Rcpp
-Version: 0.1.1
-URL: https://www.github.com/Ironholds/piton
-BugReports: https://www.github.com/Ironholds/piton/issues
-Author: Oliver Keyes [aut, cre], Colin Hirsch [cph], Daniel Frey [cph]
-Maintainer: Oliver Keyes <ironholds@gmail.com>
+Version: 1.0.0
+URL: https://github.com/Ironholds/piton
+BugReports: https://github.com/Ironholds/pitonissues
+Author: Os Keyes [aut, cre], Duncan Garmonsway [ctb], Colin Hirsch [cph], Daniel Frey [cph]
+Maintainer: Os Keyes <ironholds@gmail.com>
 Description: A wrapper around the 'Parsing Expression Grammar Template Library', a C++11 library for generating
     Parsing Expression Grammars, that makes it accessible within Rcpp. With this, developers can implement
     their own grammars and easily expose them in R packages.
@@ -17,4 +17,4 @@ Imports: Rcpp
 SystemRequirements: C++11
 RoxygenNote: 7.1.1
 Suggests: testthat
-Date: 2017-06-05
+Date: 2020-11-02
